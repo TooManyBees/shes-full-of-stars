@@ -31,15 +31,13 @@ public:
 
 		mesh.addVertices(positions);
 		mesh.addColors(colors);
-		/*for (auto i : probeIndices) {
-			mesh.setColor(i, randomColor);
-		}*/
 		mesh.setMode(OF_PRIMITIVE_POINTS);
 	}
 
 	bool isInView(ofCamera &camera) {
 		for (int i : probeIndices) {
 			if (isStarInView(camera, positions[i])) {
+				mesh.setColor(i, red);
 				return true;
 			}
 		}
@@ -74,7 +72,7 @@ private:
 		return (
 			screenCoordinates.x > 0 && screenCoordinates.x < ofGetWidth() &&
 			screenCoordinates.y > 0 && screenCoordinates.y < ofGetHeight() &&
-			screenCoordinates.z > 0
+			screenCoordinates.z < 1 // weird; find out why
 		);
 	}
 };
