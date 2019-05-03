@@ -16,6 +16,7 @@ public:
 	nite::UserMap OniManager::getUserMap();
 	void getUserMask(bool *users);
 	void getUserFrame(ofImage* image);
+	bool usersPresent();
 
 private:
 	openni::Device device;

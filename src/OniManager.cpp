@@ -114,6 +114,10 @@ nite::UserMap OniManager::getUserMap() {
 	return userFrame.getUserMap();
 }
 
+bool OniManager::usersPresent() {
+	return !userFrame.getUsers().isEmpty();
+}
+
 void OniManager::getUserMask(bool *users) {
 	if (userFrame.isValid()) {
 		nite::UserMap userMap = userFrame.getUserMap();

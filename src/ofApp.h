@@ -4,7 +4,7 @@
 #include "utils/ofJson.h"
 #include "openni.h"
 #include "OniManager.h"
-
+#include "StarMesh.h"
 
 class ofApp : public ofBaseApp{
 
@@ -31,12 +31,12 @@ class ofApp : public ofBaseApp{
 
 	private:
 		ofRectangle canvasSpace = ofRectangle(0, 0, WIDTH, HEIGHT);
-		ofImage depthFrame;
 		ofImage userFrame;
 		glm::vec3 celestialPole;
-		vector<glm::vec3> stars_pos;
-		vector<ofFloatColor> stars_color;
-		ofMesh stars;
+
+		StarMesh star_meshes[24];
+
+
 		ofCamera camera;
 		double lastFrameTime;
 		OniManager oni_manager;

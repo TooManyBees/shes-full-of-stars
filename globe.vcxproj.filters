@@ -23,6 +23,9 @@
     <ClInclude Include="src\OniManager.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\StarMesh.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="icon.rc" />
