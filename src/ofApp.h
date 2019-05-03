@@ -34,9 +34,10 @@ class ofApp : public ofBaseApp{
 		ofImage depthFrame;
 		ofImage userFrame;
 		glm::vec3 celestialPole;
+		vector<glm::vec3> stars_pos;
+		vector<ofFloatColor> stars_color;
 		ofMesh stars;
 		ofCamera camera;
-		// ofEasyCam camera;
 		double lastFrameTime;
 		OniManager oni_manager;
 };

@@ -108,6 +108,12 @@ void OniManager::histogram(float *pHistogram, openni::VideoFrameRef& frame) {
 	}
 }
 
+nite::UserMap OniManager::getUserMap() {
+	userFrame.release();
+	userTracker.readFrame(&userFrame);
+	return userFrame.getUserMap();
+}
+
 void OniManager::getUserMask(bool *users) {
 	if (userFrame.isValid()) {
 		nite::UserMap userMap = userFrame.getUserMap();

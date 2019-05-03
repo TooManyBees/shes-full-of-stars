@@ -13,6 +13,7 @@ public:
 
 	void getColorFrame(ofImage* image);
 	void getDepthFrame(ofImage* image);
+	nite::UserMap OniManager::getUserMap();
 	void getUserMask(bool *users);
 	void getUserFrame(ofImage* image);
 
