@@ -37,7 +37,6 @@ public:
 	bool isInView(ofCamera &camera) {
 		for (int i : probeIndices) {
 			if (isStarInView(camera, positions[i])) {
-				mesh.setColor(i, red);
 				return true;
 			}
 		}
@@ -50,6 +49,7 @@ public:
 		float mapWidth = userMap.getWidth();
 		float mapHeight = userMap.getHeight();
 		const nite::UserId* userPixels = userMap.getPixels();
+		vector<ofFloatColor> &meshColors = mesh.getColors();
 		for (int i = 0; i < positions.size(); i++) {
 			glm::vec3 screenCoordinates = camera.worldToScreen(positions[i]);
 			int x = screenCoordinates.x / windowWidth * mapWidth;
@@ -57,7 +57,9 @@ public:
 			int y = screenCoordinates.y / windowHeight * mapHeight;
 			if (y < 0 || y >= mapHeight) continue;
 			if (x >= 0 && y >= 0 && userPixels[y * userMap.getWidth() + x] > 0) {
-				mesh.setColor(i, red);
+				meshColors[i] = red;
+			} else {
+				meshColors[i] = white;
 			}
 		}
 	}
