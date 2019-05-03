@@ -2,6 +2,14 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+	if (oni_manager.setup(WIDTH, HEIGHT, FPS, true)) {
+		cout << "Setup device and streams.\n" << endl;
+	}
+	else {
+		cerr << openni::OpenNI::getExtendedError() << endl;
+		return std::exit(1);
+	}
+
 	{
 		float angle = ofDegToRad(23.4);
 		celestialPole = glm::vec3(glm::sin(angle), glm::cos(angle), 0.0);
@@ -26,16 +34,27 @@ void ofApp::setup(){
 	camera.lookAt(glm::vec3(0.0, 0.0, -1.0), celestialPole);
 	//cout << "x: " << camera.getXAxis() << ", y: " << camera.getYAxis() << ", z: " << camera.getZAxis() << endl;
 	glEnable(GL_POINT_SMOOTH);
+
+	depthFrame.allocate(WIDTH, HEIGHT, OF_IMAGE_GRAYSCALE);
+	userFrame.allocate(WIDTH, HEIGHT, OF_IMAGE_GRAYSCALE);
+	userFrame.setColor(ofColor(1.0, 0.0, 0.0, 1.0));
+	ofEnableAlphaBlending();
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
 	camera.rotateDeg(0.002, celestialPole);
+	oni_manager.getDepthFrame(&depthFrame);
+	oni_manager.getUserFrame(&userFrame);
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-	ofBackground(0, 0, 0);
+	ofBackgroundGradient(ofColor(0, 0, 0), ofColor(0, 8, 30), OF_GRADIENT_LINEAR);
+	userFrame.draw(0, 0, ofGetWidth(), ofGetHeight());
+	//ofSetColor(ofColor(0, 0, 0, 0));
+	//ofDrawRectangle(0, 0, WIDTH, HEIGHT);
+	ofSetColor(ofColor::white);
 	camera.begin();
 		stars.draw();
 	camera.end();

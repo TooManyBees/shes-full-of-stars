@@ -2,6 +2,9 @@
 
 #include "ofMain.h"
 #include "utils/ofJson.h"
+#include "openni.h"
+#include "OniManager.h"
+
 
 class ofApp : public ofBaseApp{
 
@@ -22,9 +25,18 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
+		static const int WIDTH = 640;
+		static const int HEIGHT = 480;
+		static const int FPS = 30;
+
+	private:
+		ofRectangle canvasSpace = ofRectangle(0, 0, WIDTH, HEIGHT);
+		ofImage depthFrame;
+		ofImage userFrame;
 		glm::vec3 celestialPole;
 		ofMesh stars;
 		ofCamera camera;
 		// ofEasyCam camera;
 		double lastFrameTime;
+		OniManager oni_manager;
 };
