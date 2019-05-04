@@ -1,5 +1,8 @@
 #pragma once
 
+#include "ofMain.h"
+#include "NiTE.h"
+
 class StarMesh {
 public:
 	StarMesh() {
@@ -11,70 +14,18 @@ public:
 	ofMesh mesh;
 	vector<glm::vec3> positions;
 	vector<ofFloatColor> colors;
+	vector<uint64_t> lastFocus;
 	int probeIndices[5];
 	ofFloatColor randomColor;
 	ofFloatColor white;
 	ofFloatColor red;
 
-	void push(glm::vec3 position) {
-		positions.push_back(position);
-		colors.push_back(white);
-	}
-
-	void init() {
-		float size = positions.size();
-		probeIndices[0] = (int)(size * 0.1);
-		probeIndices[1] = (int)(size * 0.3);
-		probeIndices[2] = (int)(size * 0.5);
-		probeIndices[3] = (int)(size * 0.7);
-		probeIndices[4] = (int)(size * 0.9);
-
-		mesh.addVertices(positions);
-		mesh.addColors(colors);
-		mesh.setMode(OF_PRIMITIVE_POINTS);
-	}
-
-	bool isInView(ofCamera &camera) {
-		for (int i : probeIndices) {
-			if (isStarInView(camera, positions[i])) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	void updateFocus(ofCamera &camera, nite::UserMap &userMap) {
-		float windowWidth = ofGetWidth();
-		float windowHeight = ofGetHeight();
-		float mapWidth = userMap.getWidth();
-		float mapHeight = userMap.getHeight();
-		const nite::UserId* userPixels = userMap.getPixels();
-		vector<ofFloatColor> &meshColors = mesh.getColors();
-		for (int i = 0; i < positions.size(); i++) {
-			glm::vec3 screenCoordinates = camera.worldToScreen(positions[i]);
-			int x = screenCoordinates.x / windowWidth * mapWidth;
-			if (x < 0 || x >= mapWidth) continue;
-			int y = screenCoordinates.y / windowHeight * mapHeight;
-			if (y < 0 || y >= mapHeight) continue;
-			if (x >= 0 && y >= 0 && userPixels[y * userMap.getWidth() + x] > 0) {
-				meshColors[i] = red;
-			} else {
-				meshColors[i] = white;
-			}
-		}
-	}
-
-	void draw() {
-		mesh.draw();
-	}
+	void push(glm::vec3 position);
+	void init();
+	bool isInView(ofCamera &camera);
+	void updateFocus(ofCamera &camera, nite::UserMap &userMap);
+	void draw() { mesh.draw(); }
 
 private:
-	bool isStarInView(ofCamera &camera, glm::vec3 &star) {
-		glm::vec3 screenCoordinates = camera.worldToScreen(star);
-		return (
-			screenCoordinates.x > 0 && screenCoordinates.x < ofGetWidth() &&
-			screenCoordinates.y > 0 && screenCoordinates.y < ofGetHeight() &&
-			screenCoordinates.z < 1 // weird; find out why
-		);
-	}
+	bool isStarInView(ofCamera &camera, glm::vec3 &star);
 };

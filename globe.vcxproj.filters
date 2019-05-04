@@ -10,6 +10,9 @@
     <ClCompile Include="src\OniManager.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\StarMesh.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
