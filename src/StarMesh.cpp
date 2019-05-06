@@ -1,12 +1,13 @@
 #include "StarMesh.h"
 
-void StarMesh::push(glm::vec3 position) {
+void StarMesh::push(glm::vec3 position, float magnitude) {
 	positions.push_back(position);
 	colors.push_back(white);
+	magnitudes.push_back(magnitude);
 	lastFocus.push_back(0);
 }
 
-void StarMesh::init() {
+void StarMesh::init(ofShader &shader) {
 	float size = positions.size();
 	probeIndices[0] = (int)(size * 0.1);
 	probeIndices[1] = (int)(size * 0.3);
@@ -14,9 +15,35 @@ void StarMesh::init() {
 	probeIndices[3] = (int)(size * 0.7);
 	probeIndices[4] = (int)(size * 0.9);
 
-	mesh.addVertices(positions);
-	mesh.addColors(colors);
-	mesh.setMode(OF_PRIMITIVE_POINTS);
+	//mesh.addVertices(positions);
+	//mesh.addColors(colors);
+	//mesh.setMode(OF_PRIMITIVE_POINTS);
+	
+	bufPositions.allocate(positions, GL_STATIC_DRAW);
+	bufMagnitudes.allocate(magnitudes, GL_STATIC_DRAW);
+	bufLastFocus.allocate(lastFocus, GL_DYNAMIC_DRAW);
+
+	size_t numInstances = positions.size();
+
+	ofSpherePrimitive sphere;
+	sphere.set(10, 2);
+	star = sphere.getMesh();
+	ofVbo &starVbo = star.getVbo();
+
+	GLint starCoordLocation = shader.getAttributeLocation("starCoord");
+	GLint magnitudeLocation = shader.getAttributeLocation("magnitude");
+	GLint lastFocusedLocation = shader.getAttributeLocation("lastFocused");
+
+	starVbo.setAttributeBuffer(starCoordLocation, bufPositions, 3, 0);
+	starVbo.setAttributeDivisor(starCoordLocation, 1);
+
+	starVbo.setAttributeBuffer(magnitudeLocation, bufMagnitudes, 1, 0);
+	starVbo.setAttributeDivisor(magnitudeLocation, 1);
+
+	starVbo.setAttributeBuffer(lastFocusedLocation, bufLastFocus, 1, 0); // because it's a u64, is the 2nd-to-last param a 1 or a 2??
+	starVbo.setAttributeDivisor(lastFocusedLocation, 1);
+
+	cout << "starCoord " << starCoordLocation << " magnitude " << magnitudeLocation << " lastFocused " << lastFocusedLocation << endl;
 }
 
 bool StarMesh::isInView(ofCamera &camera) {
@@ -60,4 +87,10 @@ bool StarMesh::isStarInView(ofCamera &camera, glm::vec3 &star) {
 		screenCoordinates.y > 0 && screenCoordinates.y < ofGetHeight() &&
 		screenCoordinates.z < 1 // weird; find out why
 	);
+}
+
+void StarMesh::draw2() {
+	//star.drawElementsInstanced(GL_POLYGON, 8, positions.size());
+	//star.drawInstanced(GL_POINTS, 0, star.getNumVertices(), positions.size());
+	star.drawInstanced(OF_MESH_FILL, positions.size());
 }

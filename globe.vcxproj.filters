@@ -33,4 +33,8 @@
   <ItemGroup>
     <ResourceCompile Include="icon.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\data\stars.vert" />
+    <None Include="bin\data\stars.frag" />
+  </ItemGroup>
 </Project>

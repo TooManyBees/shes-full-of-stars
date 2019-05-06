@@ -15,6 +15,8 @@ void ofApp::setup(){
 		celestialPole = glm::vec3(glm::sin(angle), glm::cos(angle), 0.0);
 	}
 
+	starShader.load("stars.vert", "stars.frag");
+
 	ofJson result = ofLoadJson("hyg.json");
 	double r = 1000.0;
 	glm::vec3 origin(0, 0, 0);
@@ -24,19 +26,21 @@ void ofApp::setup(){
 		glm::vec3 pos;
 		bool b = glm::intersectLineSphere(origin, xyz, origin, r, pos, throwaway);
 		size_t hour = star["hour"];
+		float magnitude = star["magnitude"];
 		if (b && hour >= 0 && hour < 24) {
-			star_meshes[hour].push(pos);
+			star_meshes[hour].push(pos, magnitude);
 		}
 	}
 	for (auto &star_mesh : star_meshes) {
-		star_mesh.init();
+		star_mesh.init(starShader);
 	}
 
-	ofSetFrameRate(60);
+	ofSetFrameRate(FPS);
 	ofSetVerticalSync(true);
 	camera.lookAt(glm::vec3(0.0, 0.0, -1.0), celestialPole);
 	//cout << "x: " << camera.getXAxis() << ", y: " << camera.getYAxis() << ", z: " << camera.getZAxis() << endl;
 	glEnable(GL_POINT_SMOOTH);
+	glCullFace(GL_BACK);
 
 	userFrame.allocate(WIDTH, HEIGHT, OF_IMAGE_GRAYSCALE);
 	ofEnableAlphaBlending();
@@ -48,10 +52,13 @@ void ofApp::update(){
 	nite::UserMap userMap = oni_manager.getUserMap();
 	//oni_manager.getUserFrame(&userFrame);
 
-	if (oni_manager.usersPresent()) {
-		for (auto &star_mesh : star_meshes) {
-			if (star_mesh.isInView(camera)) {
-				star_mesh.updateFocus(camera, userMap);
+	for (int i = 0; i < STAR_MESH_COUNT; i++) {
+		bool in_view = star_meshes[i].isInView(camera);
+		star_mesh_in_view[i] = in_view;
+
+		if (oni_manager.usersPresent()) {
+			if (in_view) {
+				star_meshes[i].updateFocus(camera, userMap);
 			}
 		}
 	}
@@ -62,11 +69,17 @@ void ofApp::update(){
 void ofApp::draw(){
 	ofBackgroundGradient(ofColor(0, 0, 0), ofColor(0, 8, 30), OF_GRADIENT_LINEAR);
 	//userFrame.draw(0, 0, ofGetWidth(), ofGetHeight());
+	//ofSetColor(255);
+	glEnable(GL_CULL_FACE);
 	camera.begin();
+	starShader.begin();
+	starShader.setUniform1i("frameNo", ofGetFrameNum());
 		for (auto &star_mesh : star_meshes) {
-			star_mesh.draw();
+			star_mesh.draw2();
 		}
+	starShader.end();
 	camera.end();
+	glDisable(GL_CULL_FACE);
 }
 
 //--------------------------------------------------------------

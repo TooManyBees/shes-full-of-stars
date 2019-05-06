@@ -34,10 +34,14 @@ class ofApp : public ofBaseApp{
 		ofImage userFrame;
 		glm::vec3 celestialPole;
 
-		StarMesh star_meshes[24];
+		static const int STAR_MESH_COUNT = 24;
+		bool star_mesh_in_view[STAR_MESH_COUNT];
+		StarMesh star_meshes[STAR_MESH_COUNT];
 
-
+		//ofEasyCam camera;
 		ofCamera camera;
 		double lastFrameTime;
 		OniManager oni_manager;
+
+		ofShader starShader;
 };
