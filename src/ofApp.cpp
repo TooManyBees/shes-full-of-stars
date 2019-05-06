@@ -16,6 +16,8 @@ void ofApp::setup(){
 	}
 
 	starShader.load("stars.vert", "stars.frag");
+	starShader.printActiveUniforms();
+	starShader.printActiveAttributes();
 
 	ofJson result = ofLoadJson("hyg.json");
 	double r = 1000.0;
@@ -75,7 +77,7 @@ void ofApp::draw(){
 	starShader.begin();
 	starShader.setUniform1i("frameNo", ofGetFrameNum());
 		for (auto &star_mesh : star_meshes) {
-			star_mesh.draw2();
+			star_mesh.draw();
 		}
 	starShader.end();
 	camera.end();

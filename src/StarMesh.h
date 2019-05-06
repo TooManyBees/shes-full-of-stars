@@ -6,7 +6,6 @@
 class StarMesh {
 public:
 	StarMesh() {
-		mesh.setMode(OF_PRIMITIVE_POINTS);
 		randomColor = ofFloatColor::fromHsb(ofRandom(1.0), 1.0, 1.0);
 		white = ofFloatColor(1.0, 1.0, 1.0);
 		red = ofFloatColor(1.0, 0.0, 0.0);
@@ -15,17 +14,19 @@ public:
 	void init(ofShader &shader);
 	bool isInView(ofCamera &camera);
 	void updateFocus(ofCamera &camera, nite::UserMap &userMap);
-	void draw() { mesh.draw(); }
-	void draw2();
+	void draw();
 
 private:
-	ofMesh mesh;
 	vector<glm::vec3> positions;
 	vector<ofFloatColor> colors;
 	vector<float> magnitudes;
-	vector<uint64_t> lastFocus;
+	vector<uint32_t> lastFocus;
+
+	GLint starColorLocation;
+	GLint lastFocusedLocation;
 
 	ofBufferObject bufPositions;
+	ofBufferObject bufColors;
 	ofBufferObject bufMagnitudes;
 	ofBufferObject bufLastFocus;
 

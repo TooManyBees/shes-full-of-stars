@@ -14,25 +14,23 @@ void StarMesh::init(ofShader &shader) {
 	probeIndices[2] = (int)(size * 0.5);
 	probeIndices[3] = (int)(size * 0.7);
 	probeIndices[4] = (int)(size * 0.9);
-
-	//mesh.addVertices(positions);
-	//mesh.addColors(colors);
-	//mesh.setMode(OF_PRIMITIVE_POINTS);
 	
 	bufPositions.allocate(positions, GL_STATIC_DRAW);
+	bufColors.allocate(colors, GL_DYNAMIC_DRAW);
 	bufMagnitudes.allocate(magnitudes, GL_STATIC_DRAW);
 	bufLastFocus.allocate(lastFocus, GL_DYNAMIC_DRAW);
 
 	size_t numInstances = positions.size();
 
 	ofSpherePrimitive sphere;
-	sphere.set(10, 2);
+	sphere.set(1, 2);
 	star = sphere.getMesh();
 	ofVbo &starVbo = star.getVbo();
 
 	GLint starCoordLocation = shader.getAttributeLocation("starCoord");
 	GLint magnitudeLocation = shader.getAttributeLocation("magnitude");
-	GLint lastFocusedLocation = shader.getAttributeLocation("lastFocused");
+	lastFocusedLocation = shader.getAttributeLocation("lastFocused");
+	starColorLocation = shader.getAttributeLocation("starColor");
 
 	starVbo.setAttributeBuffer(starCoordLocation, bufPositions, 3, 0);
 	starVbo.setAttributeDivisor(starCoordLocation, 1);
@@ -40,10 +38,11 @@ void StarMesh::init(ofShader &shader) {
 	starVbo.setAttributeBuffer(magnitudeLocation, bufMagnitudes, 1, 0);
 	starVbo.setAttributeDivisor(magnitudeLocation, 1);
 
-	starVbo.setAttributeBuffer(lastFocusedLocation, bufLastFocus, 1, 0); // because it's a u64, is the 2nd-to-last param a 1 or a 2??
+	starVbo.setAttributeBuffer(lastFocusedLocation, bufLastFocus, 1, 0);
 	starVbo.setAttributeDivisor(lastFocusedLocation, 1);
 
-	cout << "starCoord " << starCoordLocation << " magnitude " << magnitudeLocation << " lastFocused " << lastFocusedLocation << endl;
+	starVbo.setAttributeBuffer(starColorLocation, bufColors, 4, 0);
+	starVbo.setAttributeDivisor(starColorLocation, 1);
 }
 
 bool StarMesh::isInView(ofCamera &camera) {
@@ -56,28 +55,32 @@ bool StarMesh::isInView(ofCamera &camera) {
 }
 
 void StarMesh::updateFocus(ofCamera &camera, nite::UserMap &userMap) {
+	ofVbo &starVbo = star.getVbo();
 	uint64_t focusTime = ofGetFrameNum();
 	float windowWidth = ofGetWidth();
 	float windowHeight = ofGetHeight();
 	float mapWidth = userMap.getWidth();
 	float mapHeight = userMap.getHeight();
 	const nite::UserId* userPixels = userMap.getPixels();
-	vector<ofFloatColor> &meshColors = mesh.getColors();
-	for (int i = 0; i < positions.size(); i++) {
+
+	size_t size = positions.size();
+	
+	for (int i = 0; i < size; i++) {
 		glm::vec3 screenCoordinates = camera.worldToScreen(positions[i]);
 		int x = screenCoordinates.x / windowWidth * mapWidth;
 		if (x < 0 || x >= mapWidth) continue;
 		int y = screenCoordinates.y / windowHeight * mapHeight;
 		if (y < 0 || y >= mapHeight) continue;
 		if (x >= 0 && y >= 0 && userPixels[y * userMap.getWidth() + x] > 0) {
-			lastFocus[i] = focusTime;
-
-			meshColors[i] = red;
-		}
-		else {
-			meshColors[i] = white;
+			lastFocus[i] = (uint32_t) focusTime;
+			colors[i] = red;
+		} else {
+			colors[i] = white;
 		}
 	}
+
+	starVbo.updateAttributeData(lastFocusedLocation, (float*)lastFocus.data(), size);
+	starVbo.updateAttributeData(starColorLocation, (float*)colors.data(), size);
 }
 
 bool StarMesh::isStarInView(ofCamera &camera, glm::vec3 &star) {
@@ -89,8 +92,6 @@ bool StarMesh::isStarInView(ofCamera &camera, glm::vec3 &star) {
 	);
 }
 
-void StarMesh::draw2() {
-	//star.drawElementsInstanced(GL_POLYGON, 8, positions.size());
-	//star.drawInstanced(GL_POINTS, 0, star.getNumVertices(), positions.size());
+void StarMesh::draw() {
 	star.drawInstanced(OF_MESH_FILL, positions.size());
 }

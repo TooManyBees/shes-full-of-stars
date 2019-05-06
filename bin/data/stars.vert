@@ -2,20 +2,25 @@
 
 uniform mat4 modelViewProjectionMatrix;
 in vec4 position;
-in vec4 color;
-in vec4 normal;
-in vec4 texcoord;
 
-uniform uint frameNo;
+uniform int frameNo;
 in vec3 starCoord;
+in vec4 starColor;
 //in float magnitude;
-//in uint lastFocused;
+in int lastFocused;
+
+out vec4 varyingColor;
+
+const float maxFocusScale = 10.0;
 
 void main(){
-    // float focusScale =  max(10.0, frameNo - lastFocused) / 10.0 + 1;
-    // gl_Position = modelViewProjectionMatrix * (position * focusScale * 1000.0 + vec4(starCoord, 1.0));
-    vec4 movedPosition = position + vec4(starCoord, 1.0);
-    //vec4 movedPosition = position;
-    //movedPosition.y += gl_InstanceID * 100.0;
+    varyingColor = starColor;
+
+    float focusTime = clamp(float(frameNo - lastFocused), 0.0, maxFocusScale);
+    float focusScale = 1.0 + (maxFocusScale - focusTime) / maxFocusScale;
+
+    vec4 scaledPosition = position * focusScale;
+
+    vec4 movedPosition = scaledPosition + vec4(starCoord, 1.0);
     gl_Position = modelViewProjectionMatrix * movedPosition;
 }
