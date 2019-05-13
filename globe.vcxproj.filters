@@ -29,6 +29,9 @@
     <ClInclude Include="src\StarMesh.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\colorIndex.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="icon.rc" />

@@ -186,6 +186,7 @@
     <ClCompile Include="src\StarMesh.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\colorIndex.h" />
     <ClInclude Include="src\StarMesh.h" />
     <ClInclude Include="src\ofApp.h" />
     <ClInclude Include="src\OniManager.h" />

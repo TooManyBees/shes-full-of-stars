@@ -1,7 +1,8 @@
 #include "ofApp.h"
+#include "colorIndex.h"
 
 //--------------------------------------------------------------
-void ofApp::setup(){
+void ofApp::setup() {
 	if (oni_manager.setup(WIDTH, HEIGHT, FPS, true)) {
 		cout << "Setup device and streams.\n" << endl;
 	}
@@ -22,15 +23,23 @@ void ofApp::setup(){
 	ofJson result = ofLoadJson("hyg.json");
 	double r = 1000.0;
 	glm::vec3 origin(0, 0, 0);
-	glm::vec3 throwaway;
+	glm::vec3 normal;
 	for (auto star : result) {
 		glm::vec3 xyz(star["x"], star["z"], star["y"]); // intentionally swap y/z
 		glm::vec3 pos;
-		bool b = glm::intersectLineSphere(origin, xyz, origin, r, pos, throwaway);
+		bool b = glm::intersectLineSphere(origin, xyz, origin, r, pos, normal);
 		size_t hour = star["hour"];
+		ofFloatColor color = colorIndexToRGB(star["ci"]);
 		float magnitude = star["magnitude"];
+		/*
+			Magnitude:
+			Magnitude 6 is the typical limit of the human eye in perfect conditions
+			Alcor, Magnitude 3.99, should be 1px, 50% opacity
+			3.3 should be 1px and full opacity
+			Sirus, Magnitude -1.46, should be 2-3px
+		*/
 		if (b && hour >= 0 && hour < 24) {
-			star_meshes[hour].push(pos, magnitude);
+			star_meshes[hour].push(pos, magnitude, color);
 		}
 	}
 	for (auto &star_mesh : star_meshes) {
@@ -49,7 +58,8 @@ void ofApp::setup(){
 }
 
 //--------------------------------------------------------------
-void ofApp::update(){
+void ofApp::update() {
+	reloadShader();
 	camera.rotateDeg(0.002, celestialPole);
 	nite::UserMap userMap = oni_manager.getUserMap();
 	//oni_manager.getUserFrame(&userFrame);
@@ -68,73 +78,91 @@ void ofApp::update(){
 }
 
 //--------------------------------------------------------------
-void ofApp::draw(){
+void ofApp::draw() {
 	ofBackgroundGradient(ofColor(0, 0, 0), ofColor(0, 8, 30), OF_GRADIENT_LINEAR);
 	//userFrame.draw(0, 0, ofGetWidth(), ofGetHeight());
-	//ofSetColor(255);
+	ofSetColor(255);
 	glEnable(GL_CULL_FACE);
 	camera.begin();
 	starShader.begin();
 	starShader.setUniform1i("frameNo", ofGetFrameNum());
-		for (auto &star_mesh : star_meshes) {
-			star_mesh.draw();
-		}
+	for (auto &star_mesh : star_meshes) {
+		star_mesh.draw();
+	}
 	starShader.end();
 	camera.end();
 	glDisable(GL_CULL_FACE);
 }
 
 //--------------------------------------------------------------
-void ofApp::keyPressed(int key){
+void ofApp::keyPressed(int key) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::keyReleased(int key){
+void ofApp::keyReleased(int key) {
+	switch (key) {
+	case ' ':
+		shaderDirty = true;
+		break;
+	default:
+		break;
+	}
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseMoved(int x, int y) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseMoved(int x, int y ){
+void ofApp::mouseDragged(int x, int y, int button) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseDragged(int x, int y, int button){
+void ofApp::mousePressed(int x, int y, int button) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mousePressed(int x, int y, int button){
+void ofApp::mouseReleased(int x, int y, int button) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseReleased(int x, int y, int button){
+void ofApp::mouseEntered(int x, int y) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseEntered(int x, int y){
+void ofApp::mouseExited(int x, int y) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseExited(int x, int y){
+void ofApp::windowResized(int w, int h) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::windowResized(int w, int h){
+void ofApp::gotMessage(ofMessage msg) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::gotMessage(ofMessage msg){
+void ofApp::dragEvent(ofDragInfo dragInfo) {
 
 }
 
-//--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){ 
-
+void ofApp::reloadShader() {
+	if (shaderDirty) {
+		ofLogNotice() << "Reloading shader." << endl;
+		starShader.load("stars.vert", "stars.frag");
+		GLint err = glGetError();
+		if (err != GL_NO_ERROR) {
+			ofLogNotice() << "Shader failed to compile:" << endl << err << endl;
+		}
+		shaderDirty = false;
+	}
 }

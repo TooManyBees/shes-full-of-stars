@@ -44,4 +44,7 @@ class ofApp : public ofBaseApp{
 		OniManager oni_manager;
 
 		ofShader starShader;
+		bool shaderDirty = false;
+
+		void reloadShader();
 };

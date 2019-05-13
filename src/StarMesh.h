@@ -10,7 +10,7 @@ public:
 		white = ofFloatColor(1.0, 1.0, 1.0);
 		red = ofFloatColor(1.0, 0.0, 0.0);
 	}
-	void push(glm::vec3 position, float magnitude);
+	void push(glm::vec3 position, float magnitude, ofFloatColor color);
 	void init(ofShader &shader);
 	bool isInView(ofCamera &camera);
 	void updateFocus(ofCamera &camera, nite::UserMap &userMap);

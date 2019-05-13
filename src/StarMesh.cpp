@@ -1,8 +1,15 @@
 #include "StarMesh.h"
 
-void StarMesh::push(glm::vec3 position, float magnitude) {
+glm::vec3 STAR_VERTICES[] = {
+	glm::vec3(0.0, 1.0, 0.0),
+	glm::vec3(1.0, 0.0, 0.0),
+	glm::vec3(0.0, -1.0, 0.0),
+	glm::vec3(-1.0, -1.0, 0.0),
+};
+
+void StarMesh::push(glm::vec3 position, float magnitude, ofFloatColor color) {
 	positions.push_back(position);
-	colors.push_back(white);
+	colors.push_back(color);
 	magnitudes.push_back(magnitude);
 	lastFocus.push_back(0);
 }
@@ -16,14 +23,33 @@ void StarMesh::init(ofShader &shader) {
 	probeIndices[4] = (int)(size * 0.9);
 	
 	bufPositions.allocate(positions, GL_STATIC_DRAW);
-	bufColors.allocate(colors, GL_DYNAMIC_DRAW);
+	bufColors.allocate(colors, GL_STATIC_DRAW);
 	bufMagnitudes.allocate(magnitudes, GL_STATIC_DRAW);
 	bufLastFocus.allocate(lastFocus, GL_DYNAMIC_DRAW);
 
 	size_t numInstances = positions.size();
 
+	star.addVertices(&STAR_VERTICES[0], 4);
+
+/*
+	ofPlanePrimitive plane;
+	plane.set(1, 1, 3, 3);
+	star = plane.getMesh();
+	for (auto &v : star.getVertices()) {
+		if (v.x == v.y || v.x == -1 * v.y) {
+			v.x *= 2.0 / 3.0;
+			v.y *= 2.0 / 3.0;
+		}
+	}
+	for (auto &v : star.getVertices()) {
+		cout << "(" << v << ") ";
+	}
+	cout << endl;
+	*/
+
+
 	ofSpherePrimitive sphere;
-	sphere.set(1, 2);
+	sphere.set(1, 3);
 	star = sphere.getMesh();
 	ofVbo &starVbo = star.getVbo();
 
@@ -73,14 +99,14 @@ void StarMesh::updateFocus(ofCamera &camera, nite::UserMap &userMap) {
 		if (y < 0 || y >= mapHeight) continue;
 		if (x >= 0 && y >= 0 && userPixels[y * userMap.getWidth() + x] > 0) {
 			lastFocus[i] = (uint32_t) focusTime;
-			colors[i] = red;
-		} else {
-			colors[i] = white;
+			//colors[i] = red;
+		//} else {
+			//colors[i] = white;
 		}
 	}
 
 	starVbo.updateAttributeData(lastFocusedLocation, (float*)lastFocus.data(), size);
-	starVbo.updateAttributeData(starColorLocation, (float*)colors.data(), size);
+	//starVbo.updateAttributeData(starColorLocation, (float*)colors.data(), size);
 }
 
 bool StarMesh::isStarInView(ofCamera &camera, glm::vec3 &star) {
