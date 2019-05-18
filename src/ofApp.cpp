@@ -24,10 +24,12 @@ void ofApp::setup() {
 	double r = 1000.0;
 	glm::vec3 origin(0, 0, 0);
 	glm::vec3 normal;
+	glm::vec3 mirror(-1, 1, 1);
 	for (auto star : result) {
 		glm::vec3 xyz(star["x"], star["z"], star["y"]); // intentionally swap y/z
 		glm::vec3 pos;
 		bool b = glm::intersectLineSphere(origin, xyz, origin, r, pos, normal);
+		pos *= mirror;
 		size_t hour = star["hour"];
 		ofFloatColor color = colorIndexToRGB(star["ci"]);
 		float magnitude = star["magnitude"];
