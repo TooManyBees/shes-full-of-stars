@@ -24,24 +24,16 @@ void ofApp::setup() {
 	double r = 1000.0;
 	glm::vec3 origin(0, 0, 0);
 	glm::vec3 normal;
-	glm::vec3 mirror(-1, 1, 1);
+	glm::vec3 mirror(-1.0, 1.0, 1.0);
 	for (auto star : result) {
 		glm::vec3 xyz(star["x"], star["z"], star["y"]); // intentionally swap y/z
 		glm::vec3 pos;
 		bool b = glm::intersectLineSphere(origin, xyz, origin, r, pos, normal);
-		pos *= mirror;
 		size_t hour = star["hour"];
 		ofFloatColor color = colorIndexToRGB(star["ci"]);
 		float magnitude = star["magnitude"];
-		/*
-			Magnitude:
-			Magnitude 6 is the typical limit of the human eye in perfect conditions
-			Alcor, Magnitude 3.99, should be 1px, 50% opacity
-			3.3 should be 1px and full opacity
-			Sirus, Magnitude -1.46, should be 2-3px
-		*/
 		if (b && hour >= 0 && hour < 24) {
-			star_meshes[hour].push(pos, magnitude, color);
+			star_meshes[hour].push(pos * mirror, magnitude, color);
 		}
 	}
 	for (auto &star_mesh : star_meshes) {
