@@ -48,3 +48,32 @@ ofFloatColor colorIndexToRGB(float bv) {
 	float temp = colorIndexToTemp(bv);
 	return colorTempToRgb(temp);
 }
+
+// https://www.shadertoy.com/view/XdsGWs
+
+float f(float x) {
+	return (6. + x * (6. + x * (3. + x))) * exp(-x);
+}
+
+float intPlanck(float t, float lambda1, float lambda0) {
+	const float A = 1.1;
+	const float B = 1. / 1.05;
+	float C0 = 0.014387770;
+	float C = C0 / (B * t);
+	t = 1.;
+	return 100.* A / B * pow(100. * t / C0, 4.) * (f(C / lambda1) - f(C / lambda0));
+}
+
+glm::vec3 planck(float t) {
+	return glm::vec3(
+		intPlanck(t, 0.7e-6, 0.55e-6),
+		intPlanck(t, 0.55e-6, 0.49e-6),
+		intPlanck(t, 0.49e-6, 0.4e-6)
+	)*1e-14;
+}
+
+ofFloatColor colorIndexToRGB2(float bv) {
+	float temp = colorIndexToTemp(bv);
+	glm::vec3 rgb = planck(temp);
+	return ofFloatColor(rgb.x, rgb.y, rgb.z);
+}
