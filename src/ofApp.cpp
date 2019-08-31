@@ -42,7 +42,9 @@ void ofApp::setup() {
 
 	ofSetFrameRate(FPS);
 	ofSetVerticalSync(true);
+#ifndef FREECAM
 	camera.lookAt(glm::vec3(0.0, 0.0, -1.0), celestialPole);
+#endif
 	//cout << "x: " << camera.getXAxis() << ", y: " << camera.getYAxis() << ", z: " << camera.getZAxis() << endl;
 	glEnable(GL_POINT_SMOOTH);
 	glCullFace(GL_BACK);
@@ -54,7 +56,9 @@ void ofApp::setup() {
 //--------------------------------------------------------------
 void ofApp::update() {
 	reloadShader();
+#ifndef FREECAM
 	camera.rotateDeg(0.002, celestialPole);
+#endif
 	nite::UserMap userMap = oni_manager.getUserMap();
 	//oni_manager.getUserFrame(&userFrame);
 

@@ -6,6 +6,8 @@
 #include "OniManager.h"
 #include "StarMesh.h"
 
+#define FREECAM
+
 class ofApp : public ofBaseApp{
 
 	public:
@@ -38,8 +40,11 @@ class ofApp : public ofBaseApp{
 		bool star_mesh_in_view[STAR_MESH_COUNT];
 		StarMesh star_meshes[STAR_MESH_COUNT];
 
-		//ofEasyCam camera;
+#ifdef FREECAM
+		ofEasyCam camera;
+#else
 		ofCamera camera;
+#endif
 		double lastFrameTime;
 		OniManager oni_manager;
 
