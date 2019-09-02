@@ -9,7 +9,8 @@ in vec4 starColor;
 in float magnitude;
 in int lastFocused;
 
-out vec4 varyingColor;
+out vec3 varyingColor;
+out float varyingMagnitude;
 
 const float focusDecay = 10.0;
 const float focusMultiplier = 2.0;
@@ -29,9 +30,11 @@ float magnitudeBrightness(float magnitude) {
 }
 
 void main(){
-    varyingColor = starColor;
+    varyingColor = starColor.rgb;
+    varyingMagnitude = magnitude;
 
-    vec3 scaledPosition = focusSize(position.xyz) * magnitudeSize(magnitude);
+    // vec3 scaledPosition = focusSize(position.xyz) * magnitudeSize(magnitude);
+    vec3 scaledPosition = position.xyz * 1.;
 
     vec4 movedPosition = vec4(scaledPosition, position.w) + vec4(starCoord, 1.0);
     gl_Position = modelViewProjectionMatrix * movedPosition;

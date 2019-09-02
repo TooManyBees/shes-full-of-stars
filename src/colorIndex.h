@@ -77,3 +77,17 @@ ofFloatColor colorIndexToRGB2(float bv) {
 	glm::vec3 rgb = planck(temp);
 	return ofFloatColor(rgb.x, rgb.y, rgb.z);
 }
+
+// https://www.seedofandromeda.com/blogs/51-procedural-star-rendering
+
+glm::vec3 getTempColorShift(float temperature) {
+	return glm::vec3(temperature * (0.0534 / 255.0) - (43.0 / 255.0),
+		temperature * (0.0628 / 255.0) - (77.0 / 255.0),
+		temperature * (0.0735 / 255.0) - (115.0 / 255.0));
+}
+
+ofFloatColor colorIndexToRGB3(float bv) {
+	float temp = colorIndexToTemp(bv);
+	glm::vec3 rgb = getTempColorShift(temp);
+	return ofFloatColor(rgb.x, rgb.y, rgb.z);
+}

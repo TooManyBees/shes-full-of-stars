@@ -48,7 +48,11 @@ class ofApp : public ofBaseApp{
 		double lastFrameTime;
 		OniManager oni_manager;
 
+		ofFbo highRangeFbo;
+		ofFbo frameBuffer2;
 		ofShader starShader;
+		ofShader gaussianX;
+		ofShader gaussianY;
 		bool shaderDirty = false;
 
 		void reloadShader();

@@ -20,17 +20,21 @@ void ofApp::setup() {
 	starShader.printActiveUniforms();
 	starShader.printActiveAttributes();
 
+	gaussianX.load("identity.vert", "gaussianX.frag");
+	gaussianY.load("identity.vert", "gaussianY.frag");
+
 	ofJson result = ofLoadJson("hyg.json");
 	double r = 1000.0;
 	glm::vec3 origin(0, 0, 0);
 	glm::vec3 normal;
 	glm::vec3 mirror(-1.0, 1.0, 1.0);
+
 	for (auto star : result) {
 		glm::vec3 xyz(star["x"], star["z"], star["y"]); // intentionally swap y/z
 		glm::vec3 pos;
 		bool b = glm::intersectLineSphere(origin, xyz, origin, r, pos, normal);
 		size_t hour = star["hour"];
-		ofFloatColor color = colorIndexToRGB(star["ci"]);
+		ofFloatColor color = colorIndexToRGB2(star["ci"]);
 		float magnitude = star["magnitude"];
 		if (b && hour >= 0 && hour < 24) {
 			star_meshes[hour].push(pos * mirror, magnitude, color);
@@ -51,6 +55,9 @@ void ofApp::setup() {
 
 	userFrame.allocate(WIDTH, HEIGHT, OF_IMAGE_GRAYSCALE);
 	ofEnableAlphaBlending();
+
+	highRangeFbo.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA16F);
+	frameBuffer2.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA16F);
 }
 
 //--------------------------------------------------------------
@@ -77,9 +84,11 @@ void ofApp::update() {
 
 //--------------------------------------------------------------
 void ofApp::draw() {
-	ofBackgroundGradient(ofColor(0, 0, 0), ofColor(0, 8, 30), OF_GRADIENT_LINEAR);
+	//ofBackgroundGradient(ofColor(0, 0, 0), ofColor(0, 8, 30), OF_GRADIENT_LINEAR);
+	ofBackground(0);
 	//userFrame.draw(0, 0, ofGetWidth(), ofGetHeight());
-	ofSetColor(255);
+	highRangeFbo.begin();
+	ofClear(0);
 	glEnable(GL_CULL_FACE);
 	camera.begin();
 	starShader.begin();
@@ -90,6 +99,18 @@ void ofApp::draw() {
 	starShader.end();
 	camera.end();
 	glDisable(GL_CULL_FACE);
+	highRangeFbo.end();
+
+	frameBuffer2.begin();
+	ofClear(0);
+	//gaussianX.begin();
+	highRangeFbo.draw(0, 0);
+	//gaussianX.end();
+	frameBuffer2.end();
+
+	//gaussianY.begin();
+	frameBuffer2.draw(0, 0);
+	//gaussianY.end();
 }
 
 //--------------------------------------------------------------
@@ -153,14 +174,19 @@ void ofApp::dragEvent(ofDragInfo dragInfo) {
 
 }
 
+void maybeGlError() {
+	GLint err = glGetError();
+	if (err != GL_NO_ERROR) {
+		ofLogNotice() << "Shader failed to compile:" << endl << err << endl;
+	}
+}
+
 void ofApp::reloadShader() {
 	if (shaderDirty) {
 		ofLogNotice() << "Reloading shader." << endl;
-		starShader.load("stars.vert", "stars.frag");
-		GLint err = glGetError();
-		if (err != GL_NO_ERROR) {
-			ofLogNotice() << "Shader failed to compile:" << endl << err << endl;
-		}
+		starShader.load("stars.vert", "stars.frag"); maybeGlError();
+		gaussianX.load("identity.vert", "gaussianX.frag"); maybeGlError();
+		gaussianY.load("identity.vert", "gaussianY.frag"); maybeGlError();
 		shaderDirty = false;
 	}
 }

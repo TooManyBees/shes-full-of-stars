@@ -39,5 +39,6 @@
   <ItemGroup>
     <None Include="bin\data\stars.vert" />
     <None Include="bin\data\stars.frag" />
+    <None Include="bin\data\identity.vert" />
   </ItemGroup>
 </Project>
