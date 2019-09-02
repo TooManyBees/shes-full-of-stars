@@ -15,6 +15,7 @@ public:
 	bool isInView(ofCamera &camera);
 	void updateFocus(ofCamera &camera, nite::UserMap &userMap);
 	void draw();
+	size_t size();
 
 private:
 	vector<glm::vec3> positions;
@@ -22,11 +23,7 @@ private:
 	vector<float> magnitudes;
 	vector<uint32_t> lastFocus;
 
-	GLint starColorLocation;
 	GLint lastFocusedLocation;
-
-	ofBufferObject bufPositions;
-	ofBufferObject bufColors;
 	ofBufferObject bufMagnitudes;
 	ofBufferObject bufLastFocus;
 

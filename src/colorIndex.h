@@ -75,5 +75,5 @@ glm::vec3 planck(float t) {
 ofFloatColor colorIndexToRGB2(float bv) {
 	float temp = colorIndexToTemp(bv);
 	glm::vec3 rgb = planck(temp);
-	return ofFloatColor(rgb.x, rgb.y, rgb.z);
+	return ofFloatColor(rgb.x, rgb.y, rgb.z).normalize();
 }

@@ -8,6 +8,8 @@
 
 #define FREECAM
 
+//#define FOCUS
+
 class ofApp : public ofBaseApp{
 
 	public:
@@ -35,10 +37,15 @@ class ofApp : public ofBaseApp{
 		ofRectangle canvasSpace = ofRectangle(0, 0, WIDTH, HEIGHT);
 		ofImage userFrame;
 		glm::vec3 celestialPole;
+		glm::vec3 betelgeuse;
+		glm::vec3 rigel;
+		glm::vec3 sirius;
 
 		static const int STAR_MESH_COUNT = 24;
 		bool star_mesh_in_view[STAR_MESH_COUNT];
+		size_t star_slice_indices[STAR_MESH_COUNT + 1];
 		StarMesh star_meshes[STAR_MESH_COUNT];
+		StarMesh star_mesh;
 
 #ifdef FREECAM
 		ofEasyCam camera;

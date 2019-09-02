@@ -1,5 +1,9 @@
 #include "StarMesh.h"
 
+size_t StarMesh::size() {
+	return positions.size();
+}
+
 void StarMesh::push(glm::vec3 position, float magnitude, ofFloatColor color) {
 	positions.push_back(position);
 	colors.push_back(color);
@@ -14,33 +18,21 @@ void StarMesh::init(ofShader &shader) {
 	probeIndices[2] = (int)(size * 0.5);
 	probeIndices[3] = (int)(size * 0.7);
 	probeIndices[4] = (int)(size * 0.9);
-	
-	bufPositions.allocate(positions, GL_STATIC_DRAW);
-	bufColors.allocate(colors, GL_STATIC_DRAW);
+
 	bufMagnitudes.allocate(magnitudes, GL_STATIC_DRAW);
 	bufLastFocus.allocate(lastFocus, GL_DYNAMIC_DRAW);
 
-	ofSpherePrimitive sphere;
-	sphere.set(1, 3);
-	star = sphere.getMesh();
 	ofVbo &starVbo = star.getVbo();
 
-	GLint starCoordLocation = shader.getAttributeLocation("starCoord");
+	star.addVertices(positions);
+	star.addColors(colors);
+	star.setMode(OF_PRIMITIVE_POINTS);
+
 	GLint magnitudeLocation = shader.getAttributeLocation("magnitude");
 	lastFocusedLocation = shader.getAttributeLocation("lastFocused");
-	starColorLocation = shader.getAttributeLocation("starColor");
-
-	starVbo.setAttributeBuffer(starCoordLocation, bufPositions, 3, 0);
-	starVbo.setAttributeDivisor(starCoordLocation, 1);
 
 	starVbo.setAttributeBuffer(magnitudeLocation, bufMagnitudes, 1, 0);
-	starVbo.setAttributeDivisor(magnitudeLocation, 1);
-
 	starVbo.setAttributeBuffer(lastFocusedLocation, bufLastFocus, 1, 0);
-	starVbo.setAttributeDivisor(lastFocusedLocation, 1);
-
-	starVbo.setAttributeBuffer(starColorLocation, bufColors, 4, 0);
-	starVbo.setAttributeDivisor(starColorLocation, 1);
 }
 
 bool StarMesh::isInView(ofCamera &camera) {
@@ -88,5 +80,5 @@ bool StarMesh::isStarInView(ofCamera &camera, glm::vec3 &star) {
 }
 
 void StarMesh::draw() {
-	star.drawInstanced(OF_MESH_FILL, positions.size());
+	star.draw(OF_MESH_POINTS);
 }
