@@ -136,9 +136,9 @@ void ofApp::draw() {
 	//userFrame.draw(0, 0, ofGetWidth(), ofGetHeight());
 #endif
 
-	drawStar(betelgeuse, "Betelgeuse", camera);
-	drawStar(rigel, "Rigel", camera);
-	drawStar(sirius, "Sirius", camera);
+	//drawStar(betelgeuse, "Betelgeuse", camera);
+	//drawStar(rigel, "Rigel", camera);
+	//drawStar(sirius, "Sirius", camera);
 
 	ofSetColor(255);
 	glEnable(GL_CULL_FACE);
