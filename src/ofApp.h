@@ -8,7 +8,7 @@
 
 #define FREECAM
 
-//#define FOCUS
+#define FOCUS
 
 class ofApp : public ofBaseApp{
 
@@ -41,10 +41,6 @@ class ofApp : public ofBaseApp{
 		glm::vec3 rigel;
 		glm::vec3 sirius;
 
-		static const int STAR_MESH_COUNT = 24;
-		bool star_mesh_in_view[STAR_MESH_COUNT];
-		size_t star_slice_indices[STAR_MESH_COUNT + 1];
-		StarMesh star_meshes[STAR_MESH_COUNT];
 		StarMesh star_mesh;
 
 #ifdef FREECAM

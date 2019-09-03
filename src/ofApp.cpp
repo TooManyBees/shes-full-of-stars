@@ -3,7 +3,7 @@
 
 void findStar(char* name, glm::vec3 &dst, glm::vec3 &pos, ofFloatColor &color, nlohmann::json &star) {
 	if (dst == glm::vec3(0.0) && star["name"] == name) {
-		cout << "Found " << name << "! (" << pos << ") (" << color << ") " << star["magnitude"] << endl;
+		cout << "Found " << name << "! (" << pos << ") (" << color << ") Hour " << star["hour"] << star["magnitude"] << endl;
 		dst = pos;
 	}
 }
@@ -36,7 +36,9 @@ void ofApp::setup() {
 	glm::vec3 mirror(-1.0, 1.0, 1.0);
 
 	for (size_t hour = 0; hour < 24; hour++) {
-		star_slice_indices[hour] = star_mesh.size();
+		vector<glm::vec3> positions;
+		vector<ofFloatColor> colors;
+		vector<float> magnitudes;
 		for (auto star : result) {
 			if ((size_t)star["hour"] != hour) continue;
 
@@ -47,38 +49,19 @@ void ofApp::setup() {
 			size_t hour = star["hour"];
 			ofFloatColor color = colorIndexToRGB2(star["ci"]);
 			float magnitude = star["magnitude"];
+
 			if (b) {
 				findStar("Betelgeuse", betelgeuse, pos, color, star);
 				findStar("Rigel", rigel, pos, color, star);
 				findStar("Sirius", sirius, pos, color, star);
-				star_mesh.push(pos, magnitude, color);
+				positions.push_back(pos);
+				magnitudes.push_back(magnitude);
+				colors.push_back(color);
 			}
 		}
+		star_mesh.pushHour(hour, positions, magnitudes, colors);
 	}
-	/*for (int z = 0; z <= 24; z++) {
-		cout << star_slice_indices[z] << endl;
-	}*/
-
-	//for (auto star : result) {
-	//	glm::vec3 xyz(star["x"], star["z"], star["y"]); // intentionally swap y/z
-	//	glm::vec3 pos;
-	//	bool b = glm::intersectLineSphere(origin, xyz, origin, r, pos, normal);
-	//	size_t hour = star["hour"];
-	//	ofFloatColor color = colorIndexToRGB2(star["ci"]);
-	//	float magnitude = star["magnitude"];
-	//	if (b && hour >= 0 && hour < 24) {
-	//		if (betelgeuse == glm::vec3(0.0) && star["name"] == "Betelgeuse") {
-	//			cout << "Found betelgeuse! " << pos * mirror << endl;
-	//			betelgeuse = pos * mirror;
-	//			color *= 100.0;
-	//		}
-	//		//star_meshes[hour].push(pos * mirror, magnitude, color);
-	//		star_mesh.push(pos * mirror, magnitude, color);
-	//	}
-	//}
-	//for (auto &star_mesh : star_meshes) {
-		star_mesh.init(starShader);
-	//}
+	star_mesh.init(starShader);
 
 	ofSetFrameRate(FPS);
 	ofSetVerticalSync(true);
@@ -105,17 +88,9 @@ void ofApp::update() {
 	nite::UserMap userMap = oni_manager.getUserMap();
 	//oni_manager.getUserFrame(&userFrame);
 
-	//for (int i = 0; i < STAR_MESH_COUNT; i++) {
-	//	bool in_view = star_meshes[i].isInView(camera);
-	//	star_mesh_in_view[i] = in_view;
-
-	//	if (oni_manager.usersPresent()) {
-	//		if (in_view) {
-	//			star_meshes[i].updateFocus(camera, userMap);
-	//		}
-	//		//star_mesh.updateFocus(camera, userMap);
-	//	}
-	//}
+	if (oni_manager.usersPresent()) {
+		star_mesh.updateFocus(camera, userMap);
+	}
 #endif
 }
 
@@ -145,9 +120,7 @@ void ofApp::draw() {
 	camera.begin();
 	starShader.begin();
 	starShader.setUniform1i("frameNo", ofGetFrameNum());
-	//for (auto &star_mesh : star_meshes) {
-		star_mesh.draw();
-	//}
+	star_mesh.draw();
 	starShader.end();
 	camera.end();
 	glDisable(GL_CULL_FACE);

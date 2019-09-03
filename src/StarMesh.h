@@ -11,11 +11,10 @@ public:
 		red = ofFloatColor(1.0, 0.0, 0.0);
 	}
 	void push(glm::vec3 position, float magnitude, ofFloatColor color);
+	void pushHour(size_t h, vector<glm::vec3> &positions, vector<float> &magnitudes, vector<ofFloatColor> &colors);
 	void init(ofShader &shader);
-	bool isInView(ofCamera &camera);
 	void updateFocus(ofCamera &camera, nite::UserMap &userMap);
 	void draw();
-	size_t size();
 
 private:
 	vector<glm::vec3> positions;
@@ -27,7 +26,8 @@ private:
 	ofBufferObject bufMagnitudes;
 	ofBufferObject bufLastFocus;
 
-	int probeIndices[5];
+	static const size_t HOURS = 24;
+	size_t hourIndices[HOURS];
 	ofFloatColor randomColor;
 	ofFloatColor white;
 	ofFloatColor red;

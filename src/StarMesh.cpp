@@ -1,9 +1,5 @@
 #include "StarMesh.h"
 
-size_t StarMesh::size() {
-	return positions.size();
-}
-
 void StarMesh::push(glm::vec3 position, float magnitude, ofFloatColor color) {
 	positions.push_back(position);
 	colors.push_back(color);
@@ -11,13 +7,20 @@ void StarMesh::push(glm::vec3 position, float magnitude, ofFloatColor color) {
 	lastFocus.push_back(0);
 }
 
+void StarMesh::pushHour(size_t h, vector<glm::vec3> &ps, vector<float> &ms, vector<ofFloatColor> &cs) {
+	for (auto &p : ps) {
+		positions.push_back(p);
+		lastFocus.push_back(0);
+	}
+	for (auto &m : ms) magnitudes.push_back(m);
+	for (auto &c : cs) colors.push_back(c);
+
+	if (h == 0) hourIndices[h] = 0;
+	else hourIndices[h] = positions.size();
+}
+
 void StarMesh::init(ofShader &shader) {
 	float size = positions.size();
-	probeIndices[0] = (int)(size * 0.1);
-	probeIndices[1] = (int)(size * 0.3);
-	probeIndices[2] = (int)(size * 0.5);
-	probeIndices[3] = (int)(size * 0.7);
-	probeIndices[4] = (int)(size * 0.9);
 
 	bufMagnitudes.allocate(magnitudes, GL_STATIC_DRAW);
 	bufLastFocus.allocate(lastFocus, GL_DYNAMIC_DRAW);
@@ -35,17 +38,7 @@ void StarMesh::init(ofShader &shader) {
 	starVbo.setAttributeBuffer(lastFocusedLocation, bufLastFocus, 1, 0);
 }
 
-bool StarMesh::isInView(ofCamera &camera) {
-	for (int i : probeIndices) {
-		if (isStarInView(camera, positions[i])) {
-			return true;
-		}
-	}
-	return false;
-}
-
-void StarMesh::updateFocus(ofCamera &camera, nite::UserMap &userMap) {
-	ofVbo &starVbo = star.getVbo();
+void updateStarFocus(size_t start, size_t end, const ofCamera &camera, const nite::UserMap &userMap, const vector<glm::vec3> &positions, vector<uint32_t> &lastFocus) {
 	uint64_t focusTime = ofGetFrameNum();
 	float windowWidth = ofGetWidth();
 	float windowHeight = ofGetHeight();
@@ -53,20 +46,36 @@ void StarMesh::updateFocus(ofCamera &camera, nite::UserMap &userMap) {
 	float mapHeight = userMap.getHeight();
 	const nite::UserId* userPixels = userMap.getPixels();
 
-	size_t size = positions.size();
-	
-	for (int i = 0; i < size; i++) {
+	for (int i = start; i < end; i++) {
 		glm::vec3 screenCoordinates = camera.worldToScreen(positions[i]);
 		int x = screenCoordinates.x / windowWidth * mapWidth;
 		if (x < 0 || x >= mapWidth) continue;
 		int y = screenCoordinates.y / windowHeight * mapHeight;
 		if (y < 0 || y >= mapHeight) continue;
 		if (x >= 0 && y >= 0 && userPixels[y * userMap.getWidth() + x] > 0) {
-			lastFocus[i] = (uint32_t) focusTime;
+			lastFocus[i] = (uint32_t)focusTime;
 		}
 	}
+}
 
-	starVbo.updateAttributeData(lastFocusedLocation, (float*)lastFocus.data(), size);
+void StarMesh::updateFocus(ofCamera &camera, nite::UserMap &userMap) {
+	ofVbo &starVbo = star.getVbo();
+
+	// FIXME: Is the -7 correct? Is the 4 correct? Test.
+	size_t hour = (HOURS + (size_t)camera.getHeadingDeg() / 15 - 7) % HOURS;
+	size_t hoursHorizontal = 4;
+	size_t start = hourIndices[(HOURS + hour - hoursHorizontal) % HOURS];
+	size_t end = hourIndices[(hour + hoursHorizontal + 1) % HOURS];
+
+	if (start < end) {
+		updateStarFocus(start, end, camera, userMap, positions, lastFocus);
+	}
+	else {
+		updateStarFocus(start, positions.size(), camera, userMap, positions, lastFocus);
+		updateStarFocus(0, end, camera, userMap, positions, lastFocus);
+	}
+
+	starVbo.updateAttributeData(lastFocusedLocation, (float*)lastFocus.data(), positions.size());
 	//starVbo.updateAttributeData(starColorLocation, (float*)colors.data(), size);
 }
 
