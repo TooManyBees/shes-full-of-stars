@@ -8,15 +8,14 @@ void StarMesh::push(glm::vec3 position, float magnitude, ofFloatColor color) {
 }
 
 void StarMesh::pushHour(size_t h, vector<glm::vec3> &ps, vector<float> &ms, vector<ofFloatColor> &cs) {
+	hourIndices[h] = positions.size();
+
 	for (auto &p : ps) {
 		positions.push_back(p);
 		lastFocus.push_back(0);
 	}
 	for (auto &m : ms) magnitudes.push_back(m);
 	for (auto &c : cs) colors.push_back(c);
-
-	if (h == 0) hourIndices[h] = 0;
-	else hourIndices[h] = positions.size();
 }
 
 void StarMesh::init(ofShader &shader) {
@@ -61,8 +60,9 @@ void updateStarFocus(size_t start, size_t end, const ofCamera &camera, const nit
 void StarMesh::updateFocus(ofCamera &camera, nite::UserMap &userMap) {
 	ofVbo &starVbo = star.getVbo();
 
-	// FIXME: Is the -7 correct? Is the 4 correct? Test.
-	size_t hour = (HOURS + (size_t)camera.getHeadingDeg() / 15 - 7) % HOURS;
+	glm::vec3 o = camera.getOrientationEulerDeg();
+	size_t deg = ((size_t)(abs(o.z) > 90 ? o.z - o.y : o.y) + 360) % 360;
+	size_t hour = (deg / 15 + 17) % HOURS;
 	size_t hoursHorizontal = 4;
 	size_t start = hourIndices[(HOURS + hour - hoursHorizontal) % HOURS];
 	size_t end = hourIndices[(hour + hoursHorizontal + 1) % HOURS];
