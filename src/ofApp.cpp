@@ -3,7 +3,7 @@
 
 void findStar(char* name, glm::vec3 &dst, glm::vec3 &pos, ofFloatColor &color, nlohmann::json &star) {
 	if (dst == glm::vec3(0.0) && star["name"] == name) {
-		cout << "Found " << name << "! (" << pos << ") (" << color << ") Hour " << star["hour"] << star["magnitude"] << endl;
+		cout << "Found " << name << "! (" << pos << ") (" << color << ") Hour " << star["hour"] << " " << star["magnitude"] << endl;
 		dst = pos;
 	}
 }

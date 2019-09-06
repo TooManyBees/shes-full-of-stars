@@ -2,6 +2,9 @@
 
 [3D Starmaps](http://www.projectrho.com/public_html/starmaps/catalogues.php)
 [HYG Database](https://github.com/astronexus/HYG-Database)
+[Star PSF (Shadertoy)](https://www.shadertoy.com/view/XdsGWs)
+[Star PSF](https://www.desmos.com/calculator/6m7cebockb)
+[PSF (GNU Astronomy Utilities)](https://www.gnu.org/software/gnuastro/manual/html_node/PSF.html)
 
 # TODO
 
