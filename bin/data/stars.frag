@@ -9,7 +9,23 @@ out vec4 outputColor;
 
 float intensity() {
     // max(1, varyingMagnitude) clamps Sirius, Betelgeuse, etc
-    return pow(10, -0.05 * (max(1, varyingMagnitude) - 6.0));
+    return pow(10, -0.2 * (max(1, varyingMagnitude) - 6.0));
+}
+
+vec4 star(vec4 color, float intensity, float dist) {
+    vec4 point = color * intensity / (dist * dist * dist);
+    vec4 fade = color / dist;
+    return point + fade;
+}
+
+vec4 star2(vec4 color, float intensity, float dist) {
+    return color * pow(intensity, 1) / pow(dist, 2);
+}
+
+vec4 star3(vec4 color, float intensity, float dist) {
+    vec4 point = color * intensity / (dist * dist);
+    vec4 fade = color / pow(dist, 1.5);
+    return point + fade;
 }
 
 // Standard issue Stackoverflow Perlin noise with frame and star as inputs
@@ -21,7 +37,7 @@ float twinkle() {
 void main() {
     float d = distance(vec2(0.5), gl_PointCoord.st) * 50;
     float i = intensity() * varyingFocus;
-    vec4 col = varyingColor * i / (d);
+    vec4 col = star3(varyingColor, i, d);
     float a = smoothstep(0, 3, col.r + col.g + col.b);
-    outputColor = vec4(col.rgb, a / max(1, varyingMagnitude)) * 1.25 * twinkle();
+    outputColor = vec4(col.rgb, a / max(1, varyingMagnitude)) * twinkle();
 }
