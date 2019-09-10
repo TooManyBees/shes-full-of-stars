@@ -6,26 +6,14 @@ in float varyingFocus;
 in float varyingMagnitude;
 out vec4 outputColor;
 
-const float focusMultiplier = 2.0;
+const float focusMultiplier = 4.0;
 
-float intensity() {
-    // max(1, varyingMagnitude) clamps Sirius, Betelgeuse, etc
-    return pow(10, -0.2 * (max(1, varyingMagnitude) - 6.0));
-}
+float invertedMagnitude = -1 * varyingMagnitude + 7;
+float intensity = pow(10, 0.2 * invertedMagnitude);
 
-vec4 star(vec4 color, float intensity, float dist) {
-    vec4 point = color * intensity / (dist * dist * dist);
-    vec4 fade = color / dist;
-    return point + fade;
-}
-
-vec4 star2(vec4 color, float intensity, float dist) {
-    return color * pow(intensity, 1) / pow(dist, 2);
-}
-
-vec4 star3(vec4 color, float intensity, float dist) {
-    vec4 point = color * intensity / (dist * dist);
-    vec4 fade = color / pow(dist, 1.5);
+vec4 star(vec4 color, float intensity, float focus, float dist) {
+    vec4 point = color * intensity * (1 + focus) / (dist * dist * dist);
+    vec4 fade = color * pow(10, 0.05 * min(4, invertedMagnitude)) * (1 + focus * focusMultiplier) / dist;
     return point + fade;
 }
 
@@ -37,8 +25,8 @@ float twinkle() {
 
 void main() {
     float d = distance(vec2(0.5), gl_PointCoord.st) * 50;
-    float i = intensity() * 1 + focusMultiplier * varyingFocus;
-    vec4 col = star3(varyingColor, i, d);
-    float a = smoothstep(0, 3, col.r + col.g + col.b);
+    float i = intensity;
+    vec4 col = star(varyingColor, i, varyingFocus, d);
+    float a = smoothstep(0, 6, col.r + col.g + col.b);
     outputColor = vec4(col.rgb, a / max(1, varyingMagnitude)) * twinkle();
 }
