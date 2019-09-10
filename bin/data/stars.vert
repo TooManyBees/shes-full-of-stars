@@ -12,7 +12,7 @@ out vec4 varyingColor;
 out float varyingFocus;
 out float varyingMagnitude;
 
-const float focusDecay = 10.0;
+const float focusDecay = 15.0;
 
 float focus() {
     float focusTime = clamp(float(frameNo - lastFocused), 0.0, focusDecay);
