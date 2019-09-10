@@ -1,13 +1,10 @@
 #version 150
 
 uniform mat4 modelViewProjectionMatrix;
-uniform mat4 modelViewMatrix;
-uniform mat4 projectionMatrix;
 uniform int frameNo;
 
 in vec4 position;
 in vec4 color;
-in vec3 starCoord;
 in float magnitude;
 in int lastFocused;
 
