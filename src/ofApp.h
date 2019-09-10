@@ -5,6 +5,7 @@
 #include "openni.h"
 #include "OniManager.h"
 #include "StarMesh.h"
+#include "GifSaver.h"
 
 #define FREECAM
 
@@ -55,4 +56,11 @@ class ofApp : public ofBaseApp{
 		bool shaderDirty = false;
 
 		void reloadShader();
+
+		bool recording = false;
+		void startRecording();
+		void endRecording();
+		ofImage recordCapture;
+		unsigned int numRecordFrames = 0;
+		GifSaver* imgSaver;
 };

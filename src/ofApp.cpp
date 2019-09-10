@@ -116,14 +116,20 @@ void ofApp::draw() {
 	//drawStar(sirius, "Sirius", camera);
 
 	ofSetColor(255);
-	glEnable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
 	camera.begin();
 	starShader.begin();
 	starShader.setUniform1i("frameNo", ofGetFrameNum());
 	star_mesh.draw();
 	starShader.end();
 	camera.end();
-	glDisable(GL_CULL_FACE);
+	//glDisable(GL_CULL_FACE);
+
+	if (recording) {
+		recordCapture.grabScreen(0, 0, ofGetWidth(), ofGetHeight());
+		ofPixels* p = new ofPixels(recordCapture.getPixelsRef());
+		imgSaver->push(p);
+	}
 }
 
 //--------------------------------------------------------------
@@ -131,11 +137,30 @@ void ofApp::keyPressed(int key) {
 
 }
 
+void ofApp::startRecording() {
+	string filename = ofGetTimestampString("%F_%H-%M-%S.gif");
+	string path = ofFilePath::join("screenshots", filename);
+	cout << "New GifSaver @ " << ofGetWidth() << "x" << ofGetHeight() << endl;
+	imgSaver = new GifSaver(ofGetWidth(), ofGetHeight(), path);
+	recording = true;
+}
+
+void ofApp::endRecording() {
+	imgSaver->save();
+	delete imgSaver;
+	numRecordFrames = 0;
+	recording = false;
+}
+
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key) {
 	switch (key) {
 	case ' ':
 		shaderDirty = true;
+		break;
+	case OF_KEY_RETURN:
+		if (recording) endRecording();
+		else startRecording();
 		break;
 	default:
 		break;
