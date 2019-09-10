@@ -2,10 +2,11 @@
 
 uniform int frameNo;
 in vec4 varyingColor;
-in float varyingIntensity;
 in float varyingFocus;
 in float varyingMagnitude;
 out vec4 outputColor;
+
+const float focusMultiplier = 2.0;
 
 float intensity() {
     // max(1, varyingMagnitude) clamps Sirius, Betelgeuse, etc
@@ -36,7 +37,7 @@ float twinkle() {
 
 void main() {
     float d = distance(vec2(0.5), gl_PointCoord.st) * 50;
-    float i = intensity() * varyingFocus;
+    float i = intensity() * 1 + focusMultiplier * varyingFocus;
     vec4 col = star3(varyingColor, i, d);
     float a = smoothstep(0, 3, col.r + col.g + col.b);
     outputColor = vec4(col.rgb, a / max(1, varyingMagnitude)) * twinkle();
