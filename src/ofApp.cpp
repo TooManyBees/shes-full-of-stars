@@ -66,8 +66,8 @@ void ofApp::setup() {
 	ofSetFrameRate(FPS);
 	ofSetVerticalSync(true);
 #ifndef FREECAM
-	//camera.lookAt(glm::vec3(0.0, 0.0, -1.0), celestialPole);
-	camera.lookAt(betelgeuse, celestialPole);
+	camera.lookAt(glm::vec3(0.0, 0.0, -1.0), celestialPole);
+	//camera.lookAt(betelgeuse, celestialPole);
 #endif
 	//cout << "x: " << camera.getXAxis() << ", y: " << camera.getYAxis() << ", z: " << camera.getZAxis() << endl;
 	glEnable(GL_POINT_SMOOTH);
@@ -82,7 +82,7 @@ void ofApp::setup() {
 void ofApp::update() {
 	reloadShader();
 #ifndef FREECAM
-	//camera.rotateDeg(0.002, celestialPole);
+	camera.rotateDeg(0.002, celestialPole);
 #endif
 #ifdef FOCUS
 	nite::UserMap userMap = oni_manager.getUserMap();
