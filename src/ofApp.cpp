@@ -127,7 +127,7 @@ void ofApp::draw() {
 
 	if (recording) {
 		recordCapture.grabScreen(0, 0, ofGetWidth(), ofGetHeight());
-		ofPixels* p = new ofPixels(recordCapture.getPixelsRef());
+		ofPixels* p = new ofPixels(recordCapture.getPixels());
 		imgSaver->push(p);
 	}
 }

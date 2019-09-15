@@ -38,7 +38,7 @@ void updateStarFocus(const ofCamera &camera, const nite::UserMap &userMap, const
 	float mapHeight = userMap.getHeight();
 	const nite::UserId* userPixels = userMap.getPixels();
 
-	for (int i = 0; i < positions.size(); i++) {
+	for (size_t i = 0; i < positions.size(); i++) {
 		glm::vec3 screenCoordinates = camera.worldToScreen(positions[i]);
 		int x = screenCoordinates.x / windowWidth * mapWidth;
 		if (x < 0 || x >= mapWidth) continue;
@@ -57,7 +57,7 @@ void StarMesh::updateFocus(ofCamera &camera, nite::UserMap &userMap) {
 	updateStarFocus(camera, userMap, positions, lastFocus);
 
 	ofVbo &starVbo = star.getVbo();
-	starVbo.updateAttributeData(lastFocusedLocation, (float*)lastFocus.data(), positions.size());
+	starVbo.updateAttributeData(lastFocusedLocation, (float*)lastFocus.data(), (int)positions.size());
 	//starVbo.updateAttributeData(starColorLocation, (float*)colors.data(), size);
 }
 
