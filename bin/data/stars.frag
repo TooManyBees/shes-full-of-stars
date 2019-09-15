@@ -7,6 +7,7 @@ in float varyingMagnitude;
 out vec4 outputColor;
 
 float invertedMagnitude = -1 * varyingMagnitude + 7;
+const float falloff = 45;
 float intensity = pow(10, 0.2 * invertedMagnitude);
 float fadeIntensity = pow(10, 0.05 * min(4, invertedMagnitude));
 
@@ -23,9 +24,10 @@ float twinkle() {
 }
 
 void main() {
-    float d = distance(vec2(0.5), gl_PointCoord.st) * 45;
+    float d = distance(vec2(0.5), gl_PointCoord.st) * falloff;
     float i = intensity;
     vec4 col = star(varyingColor, i, varyingFocus, d);
     float a = smoothstep(0, 6, col.r + col.g + col.b);
-    outputColor = vec4(col.rgb, a / max(1, varyingMagnitude) * (1 + varyingFocus /2)) * twinkle();
+    a = a / max(1, varyingMagnitude) * (1 + varyingFocus / 2);
+    outputColor = vec4(col.rgb, a) * twinkle();
 }
