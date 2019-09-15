@@ -42,7 +42,7 @@ class ofApp : public ofBaseApp{
 		glm::vec3 rigel;
 		glm::vec3 sirius;
 
-		StarMesh star_mesh;
+		vector<StarMesh> star_meshes;
 
 #ifdef FREECAM
 		ofEasyCam camera;

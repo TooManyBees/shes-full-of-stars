@@ -7,14 +7,14 @@ class StarMesh {
 public:
 	StarMesh() {
 		randomColor = ofFloatColor::fromHsb(ofRandom(1.0), 1.0, 1.0);
-		white = ofFloatColor(1.0, 1.0, 1.0);
-		red = ofFloatColor(1.0, 0.0, 0.0);
 	}
 	void push(glm::vec3 position, float magnitude, ofFloatColor color);
-	void pushHour(size_t h, vector<glm::vec3> &positions, vector<float> &magnitudes, vector<ofFloatColor> &colors);
 	void init(ofShader &shader);
 	void updateFocus(ofCamera &camera, nite::UserMap &userMap);
 	void draw();
+	size_t size() {
+		return positions.size();
+	}
 
 private:
 	vector<glm::vec3> positions;
@@ -26,12 +26,11 @@ private:
 	ofBufferObject bufMagnitudes;
 	ofBufferObject bufLastFocus;
 
-	static const size_t HOURS = 24;
-	size_t hourIndices[HOURS];
 	ofFloatColor randomColor;
-	ofFloatColor white;
-	ofFloatColor red;
+	static const size_t NUM_PROBES = 5;
+	glm::vec3 probes[NUM_PROBES];
 	ofVboMesh star;
 
+	bool isInView(ofCamera &camera);
 	bool isStarInView(ofCamera &camera, glm::vec3 &star);
 };

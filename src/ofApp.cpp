@@ -35,33 +35,31 @@ void ofApp::setup() {
 	glm::vec3 normal;
 	glm::vec3 mirror(-1.0, 1.0, 1.0);
 
-	for (size_t hour = 0; hour < 24; hour++) {
-		vector<glm::vec3> positions;
-		vector<ofFloatColor> colors;
-		vector<float> magnitudes;
-		for (auto star : result) {
-			if ((size_t)star["hour"] != hour) continue;
-
-			glm::vec3 xyz(star["x"], star["z"], star["y"]); // intentionally swap y/z
-			glm::vec3 pos;
-			bool b = glm::intersectLineSphere(origin, xyz, origin, r, pos, normal);
+	map<string, StarMesh> constellations;
+	for (auto &star : result) {
+		glm::vec3 xyz(star["x"], star["z"], star["y"]); // intentionally swap y/z
+		glm::vec3 pos;
+		bool b = glm::intersectLineSphere(origin, xyz, origin, r, pos, normal);
+		if (b) {
 			pos *= mirror;
 			size_t hour = star["hour"];
 			ofFloatColor color = colorIndexToRGB2(star["ci"]);
 			float magnitude = star["magnitude"];
 
-			if (b) {
-				findStar("Betelgeuse", betelgeuse, pos, color, star);
-				findStar("Rigel", rigel, pos, color, star);
-				findStar("Sirius", sirius, pos, color, star);
-				positions.push_back(pos);
-				magnitudes.push_back(magnitude);
-				colors.push_back(color);
-			}
+			findStar("Betelgeuse", betelgeuse, pos, color, star);
+			findStar("Rigel", rigel, pos, color, star);
+			findStar("Sirius", sirius, pos, color, star);
+
+			constellations[star["con"]].push(pos, magnitude, color);
 		}
-		star_mesh.pushHour(hour, positions, magnitudes, colors);
 	}
-	star_mesh.init(starShader);
+	for (auto it : constellations) {
+		//cout << "Constellation " << it.first << " has " << it.second.size() << " stars" << endl;
+		star_meshes.push_back(it.second);
+	}
+	for (auto &mesh : star_meshes) {
+		mesh.init(starShader);
+	}
 
 	ofSetFrameRate(FPS);
 	ofSetVerticalSync(true);
@@ -89,7 +87,9 @@ void ofApp::update() {
 	//oni_manager.getUserFrame(&userFrame);
 
 	if (oni_manager.usersPresent()) {
-		star_mesh.updateFocus(camera, userMap);
+		for (auto &mesh : star_meshes) {
+			mesh.updateFocus(camera, userMap);
+		}
 	}
 #endif
 }
@@ -116,14 +116,14 @@ void ofApp::draw() {
 	//drawStar(sirius, "Sirius", camera);
 
 	ofSetColor(255);
-	//glEnable(GL_CULL_FACE);
 	camera.begin();
 	starShader.begin();
 	starShader.setUniform1i("frameNo", ofGetFrameNum());
-	star_mesh.draw();
+	for (auto &mesh : star_meshes) {
+		mesh.draw();
+	}
 	starShader.end();
 	camera.end();
-	//glDisable(GL_CULL_FACE);
 
 	if (recording) {
 		recordCapture.grabScreen(0, 0, ofGetWidth(), ofGetHeight());
