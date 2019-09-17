@@ -32,14 +32,14 @@ void ofApp::setup() {
 	ofJson result = ofLoadJson("hyg.json");
 	double r = 1000.0;
 	glm::vec3 origin(0, 0, 0);
-	glm::vec3 normal;
+	glm::vec3 whatev;
 	glm::vec3 mirror(-1.0, 1.0, 1.0);
 
 	map<string, StarMesh> constellations;
 	for (auto &star : result) {
 		glm::vec3 xyz(star["x"], star["z"], star["y"]); // intentionally swap y/z
 		glm::vec3 pos;
-		bool b = glm::intersectLineSphere(origin, xyz, origin, r, pos, normal);
+		bool b = glm::intersectLineSphere(origin, xyz, origin, r, pos, whatev, whatev, whatev);
 		if (b) {
 			pos *= mirror;
 			size_t hour = star["hour"];

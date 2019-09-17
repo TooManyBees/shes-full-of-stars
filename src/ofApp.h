@@ -2,7 +2,7 @@
 
 #include "ofMain.h"
 #include "utils/ofJson.h"
-#include "openni.h"
+#include "OpenNI.h"
 #include "OniManager.h"
 #include "StarMesh.h"
 #include "GifSaver.h"
@@ -49,7 +49,6 @@ class ofApp : public ofBaseApp{
 #else
 		ofCamera camera;
 #endif
-		double lastFrameTime;
 		OniManager oni_manager;
 
 		ofShader starShader;
