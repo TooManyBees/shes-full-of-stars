@@ -11,7 +11,7 @@ void findStar(char* name, glm::vec3 &dst, glm::vec3 &pos, ofFloatColor &color, n
 //--------------------------------------------------------------
 void ofApp::setup() {
 #ifdef FOCUS
-	if (oni_manager.setup(WIDTH, HEIGHT, FPS, true)) {
+	if (oni_manager.setup(640, 480, 30, true)) {
 		cout << "Setup device and streams.\n" << endl;
 	}
 	else {
@@ -61,7 +61,7 @@ void ofApp::setup() {
 		mesh.init(starShader);
 	}
 
-	ofSetFrameRate(FPS);
+	ofSetFrameRate(oni_manager.getFps());
 	ofSetVerticalSync(true);
 #ifndef FREECAM
 	camera.lookAt(glm::vec3(0.0, 0.0, -1.0), celestialPole);
@@ -71,7 +71,7 @@ void ofApp::setup() {
 	glEnable(GL_POINT_SMOOTH);
 	glCullFace(GL_BACK);
 
-	userFrame.allocate(WIDTH, HEIGHT, OF_IMAGE_GRAYSCALE);
+	userFrame.allocate(oni_manager.getWidth(), oni_manager.getHeight(), OF_IMAGE_GRAYSCALE);
 	ofEnableAlphaBlending();
 	glPointSize(25);
 }

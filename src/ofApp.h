@@ -30,12 +30,8 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
-		static const int WIDTH = 640;
-		static const int HEIGHT = 480;
-		static const int FPS = 30;
-
 	private:
-		ofRectangle canvasSpace = ofRectangle(0, 0, WIDTH, HEIGHT);
+		ofRectangle canvasSpace;
 		ofImage userFrame;
 		glm::vec3 celestialPole;
 		glm::vec3 betelgeuse;

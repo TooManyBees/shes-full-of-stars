@@ -1,6 +1,9 @@
 #include "OniManager.h"
 
-bool OniManager::setup(int w, int h, int fps, bool mirror) {
+bool OniManager::setup(int w, int h, int _fps, bool mirror) {
+	width = w;
+	height = h;
+	fps = _fps;
 
 	openni::Status ok = openni::STATUS_OK;
 	if (openni::OpenNI::initialize() != ok) return false;

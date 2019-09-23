@@ -8,29 +8,29 @@
 
 class OniManager {
 public:
-	//~OniManager();
 	bool setup(int w, int h, int fps, bool mirror = true);
 
 	void getColorFrame(ofImage* image);
 	void getDepthFrame(ofImage* image);
-	nite::UserMap OniManager::getUserMap();
+	nite::UserMap getUserMap();
 	void getUserMask(bool *users);
 	void getUserFrame(ofImage* image);
 	bool usersPresent();
+	int getWidth() { return width; };
+	int getHeight() { return height; };
+	int getFps() { return fps; };
 
 private:
+	int width;
+	int height;
+	int fps;
 	openni::Device device;
 	openni::VideoStream depthStream;
 	openni::VideoStream colorStream;
 	openni::VideoFrameRef colorFrame;
 
-	//void updateColorFrame();
-	//uint64_t colorFrameTimestamp;
-
 	nite::UserTracker userTracker;
 	nite::UserTrackerFrameRef userFrame;
-	//void updateUserFrame();
-	//uint64_t userFrameTimestamp;
 
 	unsigned char* pDepthMap;
 	float depthHistogram[MAX_DEPTH];
