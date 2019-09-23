@@ -90,6 +90,7 @@ void ofApp::update() {
 		for (auto &mesh : star_meshes) {
 			mesh.updateFocus(camera, userMap);
 		}
+		oni_manager.updateSkeletonTracking();
 	}
 #endif
 }
@@ -124,6 +125,16 @@ void ofApp::draw() {
 	}
 	starShader.end();
 	camera.end();
+
+	// TODO: move this into update or w/e
+	if (oni_manager.usersPresent()) {
+		auto points = oni_manager.getSkeletonPoints();
+		glm::vec3 scale(ofGetWidth(), ofGetHeight(), 0);
+		for (auto &p : points) {
+			ofDrawCircle(p * scale, 10);
+		}
+		ofSetColor(255);
+	}
 
 	if (recording) {
 		recordCapture.grabScreen(0, 0, ofGetWidth(), ofGetHeight());

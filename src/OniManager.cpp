@@ -144,3 +144,40 @@ void OniManager::getUserFrame(ofImage* image) {
 		image->setFromPixels(pixels);
 	}
 }
+
+void OniManager::updateSkeletonTracking() {
+	auto &users = userFrame.getUsers();
+	for (size_t i = 0; i < users.getSize(); i++) {
+		if (users[i].isNew()) {
+			userTracker.startSkeletonTracking(users[i].getId());
+		}
+		else if (users[i].isLost()) {
+			userTracker.stopSkeletonTracking(users[i].getId());
+		}
+	}
+}
+
+vector<glm::vec3> OniManager::getSkeletonPoints() {
+	vector<glm::vec3> points;
+	if (userFrame.isValid()) {
+		points.reserve(20); // arbitrary
+		const nite::Array<nite::UserData>& users = userFrame.getUsers();
+		for (size_t i = 0; i < users.getSize(); i++) {
+			if (!users[i].isVisible()) {
+				continue;
+			}
+			const nite::Skeleton& skeleton = users[i].getSkeleton();
+			if (skeleton.getState() != nite::SKELETON_TRACKED) {
+				continue;
+			}
+			for (size_t j = 0; j <= NITE_JOINT_COUNT; j++) {
+				const nite::Point3f& pos = skeleton.getJoint((nite::JointType)j).getPosition();
+				float x, y;
+				userTracker.convertJointCoordinatesToDepth(pos.x, pos.y, pos.z, &x, &y);
+				const glm::vec3 point(x / width, y / height, 0);
+				points.push_back(point);
+			}
+		}
+	}
+	return points;
+}

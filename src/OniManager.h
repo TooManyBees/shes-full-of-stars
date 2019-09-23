@@ -16,6 +16,8 @@ public:
 	void getUserMask(bool *users);
 	void getUserFrame(ofImage* image);
 	bool usersPresent();
+	void updateSkeletonTracking();
+	vector<glm::vec3> getSkeletonPoints();
 	int getWidth() { return width; };
 	int getHeight() { return height; };
 	int getFps() { return fps; };
