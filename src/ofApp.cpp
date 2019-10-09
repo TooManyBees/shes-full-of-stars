@@ -112,7 +112,12 @@ void drawStar(glm::vec3 &star, char *name, ofCamera &camera) {
 
 //--------------------------------------------------------------
 void ofApp::draw() {
-	ofBackgroundGradient(ofColor(0, 0, 0), ofColor(0, 8, 30), OF_GRADIENT_LINEAR);
+	if (recording) {
+		ofBackground(ofColor(0, 4, 15));
+	}
+	else {
+		ofBackgroundGradient(ofColor(0, 0, 0), ofColor(0, 8, 30), OF_GRADIENT_LINEAR);
+	}
 #ifdef FOCUS
 	//userFrame.draw(0, 0, ofGetWidth(), ofGetHeight());
 #endif
