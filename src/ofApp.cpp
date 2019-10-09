@@ -171,6 +171,9 @@ void ofApp::keyReleased(int key) {
 	case ' ':
 		shaderDirty = true;
 		break;
+	case 'f':
+		ofToggleFullscreen();
+		break;
 	case OF_KEY_RETURN:
 		if (recording) endRecording();
 		else startRecording();
