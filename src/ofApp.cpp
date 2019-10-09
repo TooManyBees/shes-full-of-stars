@@ -92,6 +92,12 @@ void ofApp::update() {
 		}
 	}
 #endif
+    if (recording) {
+        numRecordFrames += 1;
+        if (numRecordFrames > oni_manager.getFps() * 5) {
+            endRecording();
+        }
+    }
 }
 
 void drawStar(glm::vec3 &star, char *name, ofCamera &camera) {
@@ -129,6 +135,8 @@ void ofApp::draw() {
 		recordCapture.grabScreen(0, 0, ofGetWidth(), ofGetHeight());
 		ofPixels* p = new ofPixels(recordCapture.getPixels());
 		imgSaver->push(p);
+        ofSetColor(255, 0, 0);
+        ofDrawCircle(20, 20, 10);
 	}
 }
 
