@@ -4,7 +4,7 @@
 //========================================================================
 int main( ){
 	ofGLFWWindowSettings settings;
-	settings.setGLVersion(4, 3);
+	settings.setGLVersion(4, 1);
 	settings.setSize(1024, 1024);
 	//settings.decorated = false;
 	ofCreateWindow(settings);
