@@ -93,6 +93,12 @@ void ofApp::update() {
 		oni_manager.updateSkeletonTracking();
 	}
 #endif
+    if (recording) {
+        numRecordFrames += 1;
+        if (numRecordFrames > oni_manager.getFps() * 5) {
+            endRecording();
+        }
+    }
 }
 
 void drawStar(glm::vec3 &star, char *name, ofCamera &camera) {
@@ -107,7 +113,12 @@ void drawStar(glm::vec3 &star, char *name, ofCamera &camera) {
 
 //--------------------------------------------------------------
 void ofApp::draw() {
-	ofBackgroundGradient(ofColor(0, 0, 0), ofColor(0, 8, 30), OF_GRADIENT_LINEAR);
+	if (recording) {
+		ofBackground(ofColor(0, 4, 15));
+	}
+	else {
+		ofBackgroundGradient(ofColor(0, 0, 0), ofColor(0, 8, 30), OF_GRADIENT_LINEAR);
+	}
 #ifdef FOCUS
 	//userFrame.draw(0, 0, ofGetWidth(), ofGetHeight());
 #endif
@@ -140,6 +151,8 @@ void ofApp::draw() {
 		recordCapture.grabScreen(0, 0, ofGetWidth(), ofGetHeight());
 		ofPixels* p = new ofPixels(recordCapture.getPixels());
 		imgSaver->push(p);
+        ofSetColor(255, 0, 0);
+        ofDrawCircle(20, 20, 10);
 	}
 }
 
@@ -168,6 +181,9 @@ void ofApp::keyReleased(int key) {
 	switch (key) {
 	case ' ':
 		shaderDirty = true;
+		break;
+	case 'f':
+		ofToggleFullscreen();
 		break;
 	case OF_KEY_RETURN:
 		if (recording) endRecording();

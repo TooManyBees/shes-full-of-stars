@@ -31,7 +31,6 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
 
 	private:
-		ofRectangle canvasSpace;
 		ofImage userFrame;
 		glm::vec3 celestialPole;
 		glm::vec3 betelgeuse;
