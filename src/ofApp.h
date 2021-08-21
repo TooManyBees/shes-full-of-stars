@@ -57,4 +57,6 @@ class ofApp : public ofBaseApp{
 		ofImage recordCapture;
 		unsigned int numRecordFrames = 0;
 		GifSaver* imgSaver;
+
+		void snapshotConstellation();
 };
