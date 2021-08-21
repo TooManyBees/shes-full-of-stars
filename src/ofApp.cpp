@@ -44,7 +44,7 @@ void ofApp::setup() {
 		return a["magnitude"] < b["magnitude"];
 	});
 
-	map<string, StarMesh> constellations;
+	map<string, StarMesh> constellationZones;
 	for (auto &const star : stars) {
 		glm::vec3 xyz(star["x"], star["z"], star["y"]); // intentionally swap y/z
 		glm::vec3 pos;
@@ -59,10 +59,10 @@ void ofApp::setup() {
 			findStar("Rigel", rigel, pos, color, star);
 			findStar("Sirius", sirius, pos, color, star);
 
-			constellations[star["con"]].push(pos, magnitude, color);
+			constellationZones[star["con"]].push(pos, magnitude, color);
 		}
 	}
-	for (auto it : constellations) {
+	for (auto it : constellationZones) {
 		//cout << "Constellation " << it.first << " has " << it.second.size() << " stars" << endl;
 		star_meshes.push_back(it.second);
 	}
@@ -135,8 +135,16 @@ void ofApp::draw() {
 	//drawStar(rigel, "Rigel", camera);
 	//drawStar(sirius, "Sirius", camera);
 
-	ofSetColor(255);
+	
+	ofSetColor(120, 120, 180);
 	camera.begin();
+	for (auto &const constellation : constellations) {
+		for (auto &const pair : constellation) {
+			ofDrawLine(std::get<0>(pair), std::get<1>(pair));
+		}
+	}
+
+	ofSetColor(255);
 	starShader.begin();
 	starShader.setUniform1i("frameNo", ofGetFrameNum());
 	for (auto &mesh : star_meshes) {
@@ -284,4 +292,14 @@ void ofApp::snapshotConstellation() {
 	for (size_t meshIndex = 0; meshIndex < star_meshes.size(); meshIndex++) {
 		star_meshes[meshIndex].setConstellation(brightest, meshIndex);
 	}
+
+	// FIXME: bare minimum constellation
+	vector<tuple<glm::vec3, glm::vec3>> edges;
+	edges.reserve(brightest.size() - 1);
+	glm::vec3 center = brightest[ofRandom(brightest.size())].position;
+	for (auto &const star : brightest) {
+		if (star.position == center) continue;
+		edges.emplace_back(center, star.position);
+	}
+	constellations.push_back(edges);
 }
