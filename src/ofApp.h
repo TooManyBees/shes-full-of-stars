@@ -6,6 +6,7 @@
 #include "OniManager.h"
 #include "StarMesh.h"
 #include "GifSaver.h"
+#include "Constellation.h"
 
 #define FREECAM
 
@@ -38,7 +39,7 @@ class ofApp : public ofBaseApp{
 		glm::vec3 sirius;
 
 		vector<StarMesh> star_meshes;
-		vector<vector<tuple<glm::vec3, glm::vec3>>> constellations;
+		vector<Constellation> constellations;
 
 #ifdef FREECAM
 		ofEasyCam camera;

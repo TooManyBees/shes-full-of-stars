@@ -139,7 +139,7 @@ void ofApp::draw() {
 	ofSetColor(120, 120, 180);
 	camera.begin();
 	for (auto &const constellation : constellations) {
-		for (auto &const pair : constellation) {
+		for (auto &const pair : constellation.edges) {
 			ofDrawLine(std::get<0>(pair), std::get<1>(pair));
 		}
 	}
@@ -274,8 +274,8 @@ vector<StarMesh::StarAddress> getBrightFocusedStars(ofCamera &camera, size_t cou
 		brightest.begin(),
 		brightest.end(),
 		[](StarMesh::StarAddress &const a, StarMesh::StarAddress &const b) {
-		return a.magnitude < b.magnitude;
-	}
+			return a.magnitude < b.magnitude;
+		}
 	);
 
 	brightest.resize(count);
@@ -293,13 +293,6 @@ void ofApp::snapshotConstellation() {
 		star_meshes[meshIndex].setConstellation(brightest, meshIndex);
 	}
 
-	// FIXME: bare minimum constellation
-	vector<tuple<glm::vec3, glm::vec3>> edges;
-	edges.reserve(brightest.size() - 1);
-	glm::vec3 center = brightest[ofRandom(brightest.size())].position;
-	for (auto &const star : brightest) {
-		if (star.position == center) continue;
-		edges.emplace_back(center, star.position);
-	}
-	constellations.push_back(edges);
+	Constellation c = Constellation::fromStars(brightest);
+	constellations.push_back(c);
 }
