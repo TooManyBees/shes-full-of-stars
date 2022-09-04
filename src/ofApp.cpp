@@ -1,5 +1,7 @@
 #include "ofApp.h"
 #include "colorIndex.h"
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/ext.hpp"
 
 void findStar(char* name, glm::vec3 &dst, glm::vec3 &pos, ofFloatColor &color, nlohmann::json &star) {
 	if (dst == glm::vec3(0.0) && star["name"] == name) {
